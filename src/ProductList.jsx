@@ -20,16 +20,20 @@ const ProductList = () => {
         setSort(e.target.value)
     }
     const handleSearch = (e)=>{
-        setSort(e.target.value)
+        setSearch(e.target.value.toLowerCase())
+        
     }
     const fetchAPI = async ()=>{
-        const res = !sort ? await fetch(`${url}?limit=${limit}&skip=${(page-1)*limit}`) : await fetch(`${url}?limit=${limit}&skip=${(page-1)*limit}&sortBy=price&order=${sort}`)
+        let url2 = !search ? `${url}?limit=${limit}&skip=${(page-1)*limit}` : `${url}/search?q=${search}&limit=${limit}&skip=${(page-1)*limit}`
+        if(sort){url2+=`&sortBy=price&order=${sort}`}
+        // const res = !sort ? await fetch(`${url}?limit=${limit}&skip=${(page-1)*limit}`) : await fetch(`${url}?limit=${limit}&skip=${(page-1)*limit}&sortBy=price&order=${sort}`)
+        const res = await fetch(url2)
         const data = await res.json();
         setProducts(data.products);
     };
     useEffect(()=>{
         fetchAPI();
-    },[page,limit,sort])
+    },[page,limit,sort,search])
     
 
 
@@ -53,7 +57,7 @@ const ProductList = () => {
             </div>
 			<div>
 				{products.map((item) => (
-					<div key={item.id}>${item.id} {item.title} {item.price}</div>
+					<div key={item.id}>{item.id} {item.title} {item.price}</div>
 				))}
 			</div>
 			<button onClick={() => handlePage("preview")}>preview</button>
